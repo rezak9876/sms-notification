@@ -1,8 +1,8 @@
 {
-    "name": "rezak/sms-notification",
+    "name": "rezak/laravel-sms-channel",
     "description": "A Laravel package for sending SMS notifications using various services.",
-    "version": "1.0.0",
     "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Rezak\\SMSNotification\\": "src/"
@@ -17,16 +17,13 @@
         }
     },
     "require": {
-        "php": "^8.0",
-        "guzzlehttp/guzzle": "^7.0",
-        "illuminate/support": "^8.0|^9.0|^10.0"
+        "kavenegar/laravel":"^1.3"
     },
     "require-dev": {
         "pestphp/pest": "^2.36",
         "orchestra/testbench": "^8.27"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "minimum-stability": "stable",
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
@@ -51,5 +48,15 @@
         "test": [
             "@php vendor/bin/pest"
         ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rezak\\SMSNotification\\Providers\\SMSNotificationServiceProvider"
+            ],
+            "dont-discover": [
+                "kavenegar/laravel"
+            ]
+        }
     }
 }

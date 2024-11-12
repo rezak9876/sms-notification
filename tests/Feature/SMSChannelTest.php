@@ -4,69 +4,50 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Rezak\SMSNotification\SMSChannel;
 use Rezak\SMSNotification\SMSMessage;
-use Rezak\SMSNotification\SMSServiceInterface;
-use Tests\TestCase;
 
-beforeEach(function () {
-    $this->SMSServiceMock = $this->createMock(SMSServiceInterface::class);
-    $this->SMSChannel = new SMSChannel($this->SMSServiceMock);
-});
+class User
+{
+    use \Illuminate\Notifications\Notifiable;
 
-it('sends SMS notification', function () {
-    $this->SMSServiceMock->expects($this->once())
-        ->method('setTemplateName')
-        ->with('test_template');
+    public function routeNotificationForSMS()
+    {
+        return '09123456789'; // Return the user's phone number for SMS notifications
+    }
 
-    $this->SMSServiceMock->expects($this->once())
-        ->method('setPhone')
-        ->with('09123456789');
+    public function getKey()
+    {
+        return 1; // Unique identifier for the user
+    }
 
-    $this->SMSServiceMock->expects($this->once())
-        ->method('sendTemplatedSMS')
-        ->willReturn(true); // Simulate successful sending
+    public function getMorphClass()
+    {
+        return 'users'; // Optional, can return the morph type for the user
+    }
+}
 
-    NotificationFacade::fake();
+class TestSMSNotification extends Notification
+{
+    public function via($notifiable)
+    {
+        return [SMSChannel::class]; // Specify the channels to be used for the notification
+    }
 
-    // Create a notifiable with the required methods
-    $notifiable = new class {
-        public function routeNotificationForSMS()
-        {
-            return '09123456789';
-        }
+    public function toSMS($notifiable)
+    {
+        $message = new SMSMessage();
+        $message->setTemplate('test_template')
+                ->setData(['param1' => 'value1']); // Set the template and data for the SMS
+        return $message;
+    }
+}
 
-        public function getKey()
-        {
-            return 1; // Or any unique identifier
-        }
+it('works with Laravel notification system', function () {
+    NotificationFacade::fake(); // Prevent actual notifications from being sent
 
-        public function getMorphClass()
-        {
-            return 'notifiable'; // Optional: specify the morph class
-        }
-    };
+    $user = new User(); // Create a new user instance
+    $notification = new TestSMSNotification(); // Create an instance of the SMS notification
 
-    // Define the notification
-    $notification = new class extends Notification {
-        public function via($notifiable)
-        {
-            return ['SMS'];
-        }
+    NotificationFacade::send($user, $notification); // Send the notification
 
-        public function toSMS($notifiable)
-        {
-            $message = new SMSMessage();
-            $message->setTemplate('test_template')
-                    ->setData(['param1' => 'value1']);
-            return $message;
-        }
-    };
-
-    // Send the notification
-    NotificationFacade::send($notifiable, $notification);
-
-    // Call the SMSChannel send method
-    $this->SMSChannel->send($notifiable, $notification);
-
-    // Assert that the notification was sent
-    NotificationFacade::assertSentTo($notifiable, get_class($notification));
+    NotificationFacade::assertSentTo($user, TestSMSNotification::class); // Assert that the notification was sent
 });

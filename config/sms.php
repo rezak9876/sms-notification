@@ -1,8 +1,15 @@
 <?php
 
 return [
-    'kavenegar' => [
-        'token' => env('KAVENEGAR_TOKEN'),
+    'default' => env('SMS_DRIVER', 'mock'),
+    'drivers' => [
+        'mock' => [
+            'class' => \Rezak\SMSNotification\Services\SMSService\MockSMSService::class,
+        ],
+        'kavenegar' => [
+            'class' => \Rezak\SMSNotification\Services\SMSService\KavenegarSMSService::class,
+            'token' => env('KAVENEGAR_API_TOKEN'),
+            'sender'=> "10004346"
+        ]
     ],
-    // Add configuration for other SMS services as needed
 ];
