@@ -59,6 +59,8 @@ class KavenegarSMSService implements SMSServiceInterface
         $token2 = $this->tokens[1] ?? null;
         $token3 = $this->tokens[2] ?? null;
 
+        dd($receptor, $token, $token2, $token3, $template);
+
         Kavenegar::VerifyLookup($receptor, $token, $token2, $token3, $template);
     }
 

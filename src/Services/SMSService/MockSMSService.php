@@ -32,14 +32,14 @@ class MockSMSService implements SMSServiceInterface
     public function sendTemplatedSMS(): bool
     {
         Log::info("Sending templated SMS", [
-            'recipients' => implode(', ', $this->phones),
+            'recipients' => is_array($this->phones) ? implode(', ', $this->phones) : $this->phones,
             'template'   => $this->templateName,
             'params'     => $this->params,
             'timestamp'  => now()->toDateTimeString()
         ]);
         return true;
     }
-    
+
     public function sendRawSMS(string $body): bool
     {
         Log::info("Sending raw SMS", [
@@ -49,5 +49,5 @@ class MockSMSService implements SMSServiceInterface
         ]);
         return true;
     }
-    
+
 }

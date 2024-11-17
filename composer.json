@@ -1,6 +1,7 @@
 {
     "name": "rezak/laravel-sms-channel",
     "description": "A Laravel package for sending SMS notifications using various services.",
+    "version": "1.0.0",
     "type": "library",
     "license": "MIT",
     "autoload": {
